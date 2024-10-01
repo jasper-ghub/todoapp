@@ -1,10 +1,17 @@
 using ToDoApp.Components;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
+const int defaultPort = 5000;
+
+// Configure the builder
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(GetPort(builder.Configuration));
+});
 
 var app = builder.Build();
 
@@ -17,11 +24,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
-
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+return;
+
+int GetPort(IConfiguration configuration)
+{
+    var portString = Environment.GetEnvironmentVariable("PORT") ?? configuration.GetValue<string>("KestrelPort");
+    return int.TryParse(portString, out var port) ? port : defaultPort;
+}

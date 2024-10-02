@@ -1,7 +1,7 @@
 ﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp
+  name: todoapp-dep
 spec:
   replicas: 1
   selector:
@@ -14,4 +14,7 @@ spec:
     spec:
       containers:
         - name: todoapp
-          image: jhoudijk/todoapp:latest
+          image: jhoudijk/todoapp:0.1
+          env:
+            - name: PORT
+              value: "3000" 
